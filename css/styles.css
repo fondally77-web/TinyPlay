@@ -164,21 +164,7 @@ h1 {
 }
 
 .animal-emoji {
-    font-size: 4em;
-    margin-bottom: 5px;
-}
-
-.animal-name {
-    font-size: 1.8em;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 3px;
-}
-
-.animal-sound {
-    font-size: 1.3em;
-    color: #666;
-    font-style: italic;
+    font-size: 5em;
 }
 
 .game-cell:hover {
@@ -218,6 +204,72 @@ h1 {
     color: #4ecdc4;
     font-weight: bold;
     margin: 30px 0;
+}
+
+/* 動物情報エリア */
+.animal-info {
+    background: linear-gradient(135deg, #fff9c4 0%, #ffe082 100%);
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 20px;
+    min-height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s;
+}
+
+.info-placeholder {
+    text-align: center;
+    color: #888;
+    font-size: 1.5em;
+}
+
+.info-content {
+    display: none;
+    align-items: center;
+    gap: 30px;
+    width: 100%;
+    justify-content: center;
+}
+
+.info-emoji {
+    font-size: 6em;
+    animation: bounce-in 0.6s;
+}
+
+.info-details {
+    text-align: left;
+}
+
+.info-name {
+    font-size: 3em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.info-sound {
+    font-size: 2em;
+    color: #666;
+    font-style: italic;
+}
+
+.info-appear {
+    animation: info-pop 0.6s;
+}
+
+@keyframes info-pop {
+    0% { transform: scale(0.8); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes bounce-in {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
 }
 
 /* フッター */
@@ -287,16 +339,19 @@ footer {
     }
 
     .animal-emoji {
-        font-size: 2.5em;
-        margin-bottom: 3px;
+        font-size: 3.5em;
     }
 
-    .animal-name {
-        font-size: 1.2em;
+    .info-emoji {
+        font-size: 4em;
     }
 
-    .animal-sound {
-        font-size: 0.9em;
+    .info-name {
+        font-size: 2em;
+    }
+
+    .info-sound {
+        font-size: 1.5em;
     }
 
     .start-button {
@@ -365,16 +420,33 @@ footer {
     }
 
     .animal-emoji {
-        font-size: 2em;
-        margin-bottom: 2px;
+        font-size: 2.5em;
     }
 
-    .animal-name {
-        font-size: 1em;
+    .info-content {
+        flex-direction: column;
+        gap: 15px;
     }
 
-    .animal-sound {
-        font-size: 0.75em;
+    .info-emoji {
+        font-size: 3em;
+    }
+
+    .info-details {
+        text-align: center;
+    }
+
+    .info-name {
+        font-size: 1.5em;
+        margin-bottom: 5px;
+    }
+
+    .info-sound {
+        font-size: 1.2em;
+    }
+
+    .info-placeholder {
+        font-size: 1.2em;
     }
 
     .start-button {

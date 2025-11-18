@@ -55,7 +55,12 @@ const elements = {
     endScreen: document.getElementById('endScreen'),
     scoreDisplay: document.getElementById('score'),
     timerDisplay: document.getElementById('timer'),
-    finalScoreDisplay: document.getElementById('finalScore')
+    finalScoreDisplay: document.getElementById('finalScore'),
+    animalInfo: document.getElementById('animalInfo'),
+    infoContent: document.getElementById('infoContent'),
+    infoEmoji: document.getElementById('infoEmoji'),
+    infoName: document.getElementById('infoName'),
+    infoSound: document.getElementById('infoSound')
 };
 
 // 初期化
@@ -98,6 +103,9 @@ function startGame() {
     elements.gameGrid.style.display = 'grid';
     elements.endScreen.style.display = 'none';
 
+    // 情報エリアをリセット
+    resetAnimalInfo();
+
     // ゲームループ開始
     startSpawning();
     startCountdown();
@@ -137,14 +145,10 @@ function spawnAnimals() {
         // ランダムな動物を選択
         const randomAnimal = GAME_CONFIG.animals[Math.floor(Math.random() * GAME_CONFIG.animals.length)];
 
-        // セルに動物を表示
+        // セルに動物を表示（絵文字のみ）
         const cell = document.querySelector(`[data-index="${cellIndex}"]`);
         if (cell) {
-            cell.innerHTML = `
-                <div class="animal-emoji">${randomAnimal.emoji}</div>
-                <div class="animal-name">${randomAnimal.name}</div>
-                <div class="animal-sound">${randomAnimal.sound}</div>
-            `;
+            cell.innerHTML = `<div class="animal-emoji">${randomAnimal.emoji}</div>`;
             cell.classList.add('active');
             gameState.activeAnimals.push({index: cellIndex, animal: randomAnimal});
         }
@@ -179,6 +183,9 @@ function handleCellClick(event) {
         // スコア追加
         gameState.score += GAME_CONFIG.pointsPerClick;
         updateScore();
+
+        // 動物の情報を画面下部に表示
+        showAnimalInfo(clickedAnimal);
 
         // エフェクト
         cell.classList.add('clicked', 'sparkle');
@@ -254,23 +261,114 @@ function updateTimer() {
     }
 }
 
-// 動物の鳴き声を再生
+// 動物の情報を表示
+function showAnimalInfo(animal) {
+    elements.infoEmoji.textContent = animal.emoji;
+    elements.infoName.textContent = animal.name;
+    elements.infoSound.textContent = animal.sound;
+
+    // プレースホルダーを非表示にして、情報を表示
+    const placeholder = document.querySelector('.info-placeholder');
+    if (placeholder) placeholder.style.display = 'none';
+    elements.infoContent.style.display = 'flex';
+
+    // アニメーション効果
+    elements.animalInfo.classList.add('info-appear');
+    setTimeout(() => {
+        elements.animalInfo.classList.remove('info-appear');
+    }, 600);
+}
+
+// 動物情報エリアをリセット
+function resetAnimalInfo() {
+    const placeholder = document.querySelector('.info-placeholder');
+    if (placeholder) placeholder.style.display = 'block';
+    elements.infoContent.style.display = 'none';
+    elements.infoEmoji.textContent = '';
+    elements.infoName.textContent = '';
+    elements.infoSound.textContent = '';
+}
+
+// 動物の鳴き声を再生（改善版）
 function playAnimalSound(animal) {
     try {
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
+        const now = audioContext.currentTime;
 
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
+        // メインの音
+        const mainOsc = audioContext.createOscillator();
+        const mainGain = audioContext.createGain();
 
-        // 動物ごとの周波数で音を鳴らす
-        oscillator.frequency.value = animal.frequency;
-        gainNode.gain.value = 0.3;
-        oscillator.type = 'sine';
+        // ハーモニクス（倍音）を追加して豊かな音に
+        const harmonic1 = audioContext.createOscillator();
+        const harmonic1Gain = audioContext.createGain();
 
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.3);
+        const harmonic2 = audioContext.createOscillator();
+        const harmonic2Gain = audioContext.createGain();
+
+        // フィルター（音色を整える）
+        const filter = audioContext.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = animal.frequency * 3;
+        filter.Q.value = 5;
+
+        // 接続
+        mainOsc.connect(mainGain);
+        harmonic1.connect(harmonic1Gain);
+        harmonic2.connect(harmonic2Gain);
+
+        mainGain.connect(filter);
+        harmonic1Gain.connect(filter);
+        harmonic2Gain.connect(filter);
+
+        filter.connect(audioContext.destination);
+
+        // 周波数設定
+        mainOsc.frequency.value = animal.frequency;
+        harmonic1.frequency.value = animal.frequency * 1.5; // 5度上
+        harmonic2.frequency.value = animal.frequency * 2;   // オクターブ上
+
+        // 波形設定（動物によって変える）
+        mainOsc.type = 'triangle';
+        harmonic1.type = 'sine';
+        harmonic2.type = 'sine';
+
+        // ADSR エンベロープ（Attack, Decay, Sustain, Release）
+        const duration = 0.5;
+        const attackTime = 0.05;
+        const decayTime = 0.1;
+        const sustainLevel = 0.6;
+        const releaseTime = 0.15;
+
+        // メイン音量
+        mainGain.gain.setValueAtTime(0, now);
+        mainGain.gain.linearRampToValueAtTime(0.3, now + attackTime);
+        mainGain.gain.linearRampToValueAtTime(0.3 * sustainLevel, now + attackTime + decayTime);
+        mainGain.gain.setValueAtTime(0.3 * sustainLevel, now + duration - releaseTime);
+        mainGain.gain.linearRampToValueAtTime(0, now + duration);
+
+        // ハーモニクス音量（小さめ）
+        harmonic1Gain.gain.setValueAtTime(0, now);
+        harmonic1Gain.gain.linearRampToValueAtTime(0.1, now + attackTime);
+        harmonic1Gain.gain.linearRampToValueAtTime(0.1 * sustainLevel, now + attackTime + decayTime);
+        harmonic1Gain.gain.setValueAtTime(0.1 * sustainLevel, now + duration - releaseTime);
+        harmonic1Gain.gain.linearRampToValueAtTime(0, now + duration);
+
+        harmonic2Gain.gain.setValueAtTime(0, now);
+        harmonic2Gain.gain.linearRampToValueAtTime(0.05, now + attackTime);
+        harmonic2Gain.gain.linearRampToValueAtTime(0.05 * sustainLevel, now + attackTime + decayTime);
+        harmonic2Gain.gain.setValueAtTime(0.05 * sustainLevel, now + duration - releaseTime);
+        harmonic2Gain.gain.linearRampToValueAtTime(0, now + duration);
+
+        // 音を鳴らす
+        mainOsc.start(now);
+        harmonic1.start(now);
+        harmonic2.start(now);
+
+        mainOsc.stop(now + duration);
+        harmonic1.stop(now + duration);
+        harmonic2.stop(now + duration);
+
     } catch (e) {
         console.log('Audio not supported');
     }

@@ -1,11 +1,28 @@
 // ゲーム設定
 const GAME_CONFIG = {
     animals: ['🐶', '🐱', '🐰', '🐸', '🐻', '🐼', '🐨', '🦁', '🐯', '🦊', '🐷', '🐮'],
-    gridSize: 9, // 3x3 grid
+    gridSize: 9, // デフォルト: 3x3 grid
     gameDuration: 30, // 秒
     spawnInterval: 800, // ミリ秒
-    pointsPerClick: 10
+    pointsPerClick: 10,
+    mobileBreakpoint: 768 // スマホ判定のブレークポイント（ピクセル）
 };
+
+// 画面サイズに応じたグリッドサイズを取得
+function getGridSize() {
+    const isMobile = window.innerWidth <= GAME_CONFIG.mobileBreakpoint;
+    return isMobile ? 4 : 9; // スマホ: 2x2、PC: 3x3
+}
+
+// 画面サイズに応じたグリッド設定を取得
+function getGridConfig() {
+    const isMobile = window.innerWidth <= GAME_CONFIG.mobileBreakpoint;
+    return {
+        size: isMobile ? 4 : 9,
+        columns: isMobile ? 2 : 3,
+        rows: isMobile ? 2 : 3
+    };
+}
 
 // ゲーム状態
 let gameState = {
@@ -38,8 +55,15 @@ function init() {
 
 // ゲームグリッドを作成
 function createGameGrid() {
+    const gridConfig = getGridConfig();
     elements.gameGrid.innerHTML = '';
-    for (let i = 0; i < GAME_CONFIG.gridSize; i++) {
+
+    // グリッドのレイアウトを設定
+    elements.gameGrid.style.gridTemplateColumns = `repeat(${gridConfig.columns}, 1fr)`;
+    elements.gameGrid.style.gridTemplateRows = `repeat(${gridConfig.rows}, 1fr)`;
+
+    // セルを作成
+    for (let i = 0; i < gridConfig.size; i++) {
         const cell = document.createElement('div');
         cell.className = 'game-cell';
         cell.dataset.index = i;
@@ -91,8 +115,11 @@ function spawnAnimal() {
         }
     }
 
+    // 現在のグリッドサイズを取得
+    const currentGridSize = getGridSize();
+
     // ランダムなセルを選択
-    const randomIndex = Math.floor(Math.random() * GAME_CONFIG.gridSize);
+    const randomIndex = Math.floor(Math.random() * currentGridSize);
     const randomAnimal = GAME_CONFIG.animals[Math.floor(Math.random() * GAME_CONFIG.animals.length)];
 
     const cell = document.querySelector(`[data-index="${randomIndex}"]`);
@@ -171,6 +198,9 @@ function endGame() {
 function resetGame() {
     elements.endScreen.style.display = 'none';
     elements.startScreen.style.display = 'block';
+
+    // グリッドを再作成（画面サイズが変わった場合に対応）
+    createGameGrid();
 }
 
 // スコア更新
@@ -245,3 +275,15 @@ document.addEventListener('keydown', (event) => {
 
 // ページ読み込み時に初期化
 window.addEventListener('DOMContentLoaded', init);
+
+// ウィンドウサイズ変更時にグリッドを再作成
+let resizeTimer;
+window.addEventListener('resize', () => {
+    // ゲーム中でない場合のみ再作成
+    if (!gameState.isPlaying) {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            createGameGrid();
+        }, 250); // デバウンス: 250ms待ってから実行
+    }
+});

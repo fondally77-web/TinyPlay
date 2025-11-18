@@ -139,6 +139,7 @@ h1 {
     width: 100%;
     max-width: 600px;
     height: 500px;
+    aspect-ratio: 1 / 1;
 }
 
 .game-cell {
@@ -249,15 +250,14 @@ footer {
     }
 
     .game-grid {
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(3, 1fr);
         max-width: 100%;
-        height: 350px;
+        height: auto;
         gap: 10px;
     }
 
     .game-cell {
-        font-size: 2.5em;
+        font-size: 3.5em;
+        min-height: 120px;
     }
 
     .start-button {
@@ -315,13 +315,14 @@ footer {
     }
 
     .game-grid {
-        height: 300px;
+        height: auto;
         gap: 8px;
     }
 
     .game-cell {
-        font-size: 2em;
+        font-size: 3em;
         border-radius: 15px;
+        min-height: 100px;
     }
 
     .start-button {

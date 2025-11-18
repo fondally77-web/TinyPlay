@@ -129,6 +129,9 @@ function spawnAnimals() {
     // 全ての動物をクリア
     clearAllAnimals();
 
+    // 情報エリアを非表示にする
+    hideAnimalInfo();
+
     const gridSize = getGridSize();
     const numAnimals = Math.floor(Math.random() * (GAME_CONFIG.maxActiveAnimals - GAME_CONFIG.minActiveAnimals + 1)) + GAME_CONFIG.minActiveAnimals;
 
@@ -267,9 +270,8 @@ function showAnimalInfo(animal) {
     elements.infoName.textContent = animal.name;
     elements.infoSound.textContent = animal.sound;
 
-    // プレースホルダーを非表示にして、情報を表示
-    const placeholder = document.querySelector('.info-placeholder');
-    if (placeholder) placeholder.style.display = 'none';
+    // 情報エリア全体を表示
+    elements.animalInfo.style.display = 'flex';
     elements.infoContent.style.display = 'flex';
 
     // アニメーション効果
@@ -279,14 +281,18 @@ function showAnimalInfo(animal) {
     }, 600);
 }
 
-// 動物情報エリアをリセット
-function resetAnimalInfo() {
-    const placeholder = document.querySelector('.info-placeholder');
-    if (placeholder) placeholder.style.display = 'block';
+// 動物情報エリアを非表示
+function hideAnimalInfo() {
+    elements.animalInfo.style.display = 'none';
     elements.infoContent.style.display = 'none';
     elements.infoEmoji.textContent = '';
     elements.infoName.textContent = '';
     elements.infoSound.textContent = '';
+}
+
+// 動物情報エリアをリセット（ゲーム開始時用）
+function resetAnimalInfo() {
+    hideAnimalInfo();
 }
 
 // 動物の鳴き声を再生（改善版）

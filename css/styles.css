@@ -213,21 +213,15 @@ h1 {
     padding: 20px;
     margin-top: 20px;
     min-height: 120px;
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
     transition: all 0.3s;
 }
 
-.info-placeholder {
-    text-align: center;
-    color: #888;
-    font-size: 1.5em;
-}
-
 .info-content {
-    display: none;
+    display: flex;
     align-items: center;
     gap: 30px;
     width: 100%;
@@ -442,10 +436,6 @@ footer {
     }
 
     .info-sound {
-        font-size: 1.2em;
-    }
-
-    .info-placeholder {
         font-size: 1.2em;
     }
 

@@ -1,6 +1,19 @@
 // ゲーム設定
 const GAME_CONFIG = {
-    animals: ['🐶', '🐱', '🐰', '🐸', '🐻', '🐼', '🐨', '🦁', '🐯', '🦊', '🐷', '🐮'],
+    animals: [
+        { emoji: '🐶', name: 'いぬ', sound: 'ワンワン', frequency: 800 },
+        { emoji: '🐱', name: 'ねこ', sound: 'ニャーニャー', frequency: 900 },
+        { emoji: '🐰', name: 'うさぎ', sound: 'ピョンピョン', frequency: 1000 },
+        { emoji: '🐸', name: 'かえる', sound: 'ケロケロ', frequency: 700 },
+        { emoji: '🐻', name: 'くま', sound: 'ガオー', frequency: 400 },
+        { emoji: '🐼', name: 'パンダ', sound: 'モグモグ', frequency: 500 },
+        { emoji: '🐨', name: 'コアラ', sound: 'コアー', frequency: 600 },
+        { emoji: '🦁', name: 'らいおん', sound: 'ガオー', frequency: 350 },
+        { emoji: '🐯', name: 'とら', sound: 'ガルル', frequency: 380 },
+        { emoji: '🦊', name: 'きつね', sound: 'コンコン', frequency: 850 },
+        { emoji: '🐷', name: 'ぶた', sound: 'ブーブー', frequency: 450 },
+        { emoji: '🐮', name: 'うし', sound: 'モーモー', frequency: 300 }
+    ],
     gridSize: 9, // 常に3x3 grid
     gameDuration: 60, // 秒（長めに設定）
     spawnInterval: 2500, // ミリ秒（ゆっくり）
@@ -28,7 +41,7 @@ let gameState = {
     score: 0,
     timeLeft: GAME_CONFIG.gameDuration,
     isPlaying: false,
-    activeAnimals: [], // 現在アクティブな動物の配列 [{index: 0, emoji: '🐶'}, ...]
+    activeAnimals: [], // 現在アクティブな動物の配列 [{index: 0, animal: {...}}, ...]
     spawnTimer: null,
     countdownTimer: null
 };
@@ -127,9 +140,13 @@ function spawnAnimals() {
         // セルに動物を表示
         const cell = document.querySelector(`[data-index="${cellIndex}"]`);
         if (cell) {
-            cell.textContent = randomAnimal;
+            cell.innerHTML = `
+                <div class="animal-emoji">${randomAnimal.emoji}</div>
+                <div class="animal-name">${randomAnimal.name}</div>
+                <div class="animal-sound">${randomAnimal.sound}</div>
+            `;
             cell.classList.add('active');
-            gameState.activeAnimals.push({index: cellIndex, emoji: randomAnimal});
+            gameState.activeAnimals.push({index: cellIndex, animal: randomAnimal});
         }
     }
 }
@@ -139,7 +156,7 @@ function clearAllAnimals() {
     gameState.activeAnimals.forEach(animal => {
         const cell = document.querySelector(`[data-index="${animal.index}"]`);
         if (cell) {
-            cell.textContent = '';
+            cell.innerHTML = '';
             cell.classList.remove('active');
         }
     });
@@ -157,6 +174,8 @@ function handleCellClick(event) {
     const animalIndex = gameState.activeAnimals.findIndex(animal => animal.index === clickedIndex);
 
     if (animalIndex !== -1 && cell.classList.contains('active')) {
+        const clickedAnimal = gameState.activeAnimals[animalIndex].animal;
+
         // スコア追加
         gameState.score += GAME_CONFIG.pointsPerClick;
         updateScore();
@@ -165,12 +184,12 @@ function handleCellClick(event) {
         cell.classList.add('clicked', 'sparkle');
         setTimeout(() => {
             cell.classList.remove('clicked', 'sparkle');
-            cell.textContent = '';
+            cell.innerHTML = '';
             cell.classList.remove('active');
         }, 300);
 
-        // 効果音
-        playSound('click');
+        // 動物の鳴き声を再生
+        playAnimalSound(clickedAnimal);
 
         // 配列から削除
         gameState.activeAnimals.splice(animalIndex, 1);
@@ -235,6 +254,28 @@ function updateTimer() {
     }
 }
 
+// 動物の鳴き声を再生
+function playAnimalSound(animal) {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        // 動物ごとの周波数で音を鳴らす
+        oscillator.frequency.value = animal.frequency;
+        gainNode.gain.value = 0.3;
+        oscillator.type = 'sine';
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (e) {
+        console.log('Audio not supported');
+    }
+}
+
 // 効果音再生（オプション - Web Audio API使用）
 function playSound(type) {
     // AudioContextを使った簡単なビープ音
@@ -248,11 +289,6 @@ function playSound(type) {
 
         // 音の種類に応じて周波数を変える
         switch(type) {
-            case 'click':
-                oscillator.frequency.value = 800;
-                gainNode.gain.value = 0.3;
-                oscillator.type = 'sine';
-                break;
             case 'start':
                 oscillator.frequency.value = 600;
                 gainNode.gain.value = 0.2;

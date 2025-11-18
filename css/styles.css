@@ -36,7 +36,7 @@ header {
 
 h1 {
     color: #ff6b6b;
-    font-size: 2.5em;
+    font-size: 3em;
     margin-bottom: 15px;
     text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1);
     animation: bounce 2s infinite;
@@ -59,7 +59,7 @@ h1 {
     padding: 15px 30px;
     border-radius: 20px;
     color: white;
-    font-size: 1.5em;
+    font-size: 1.8em;
     font-weight: bold;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
@@ -69,7 +69,7 @@ h1 {
 }
 
 .number {
-    font-size: 1.3em;
+    font-size: 1.5em;
     color: #fff59d;
 }
 
@@ -100,6 +100,13 @@ h1 {
     font-size: 4em;
     margin: 30px 0;
     animation: wiggle 1s infinite;
+}
+
+.start-instruction {
+    font-size: 1.5em !important;
+    animation: none !important;
+    color: #666;
+    margin: 15px 0 30px 0 !important;
 }
 
 @keyframes wiggle {
@@ -146,13 +153,32 @@ h1 {
     background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
     border-radius: 20px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     cursor: pointer;
     transition: all 0.3s;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    font-size: 5em;
     touch-action: manipulation;
+    padding: 10px;
+}
+
+.animal-emoji {
+    font-size: 4em;
+    margin-bottom: 5px;
+}
+
+.animal-name {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 3px;
+}
+
+.animal-sound {
+    font-size: 1.3em;
+    color: #666;
+    font-style: italic;
 }
 
 .game-cell:hover {
@@ -205,7 +231,7 @@ footer {
     padding: 15px;
     border-radius: 15px;
     color: #333;
-    font-size: 1.2em;
+    font-size: 1.4em;
     font-weight: bold;
 }
 
@@ -217,7 +243,7 @@ footer {
     }
 
     h1 {
-        font-size: 1.5em;
+        font-size: 1.8em;
         margin-bottom: 10px;
     }
 
@@ -228,11 +254,11 @@ footer {
 
     .score, .timer {
         padding: 10px 20px;
-        font-size: 1em;
+        font-size: 1.2em;
     }
 
     .number {
-        font-size: 1.2em;
+        font-size: 1.3em;
     }
 
     .game-area {
@@ -256,8 +282,21 @@ footer {
     }
 
     .game-cell {
-        font-size: 3em;
-        min-height: 100px;
+        min-height: 120px;
+        padding: 8px;
+    }
+
+    .animal-emoji {
+        font-size: 2.5em;
+        margin-bottom: 3px;
+    }
+
+    .animal-name {
+        font-size: 1.2em;
+    }
+
+    .animal-sound {
+        font-size: 0.9em;
     }
 
     .start-button {
@@ -287,7 +326,7 @@ footer {
     }
 
     h1 {
-        font-size: 1.2em;
+        font-size: 1.4em;
     }
 
     .score-board {
@@ -297,7 +336,7 @@ footer {
 
     .score, .timer {
         padding: 8px 15px;
-        font-size: 0.9em;
+        font-size: 1em;
     }
 
     .game-area {
@@ -320,9 +359,22 @@ footer {
     }
 
     .game-cell {
-        font-size: 2.2em;
         border-radius: 12px;
-        min-height: 80px;
+        min-height: 100px;
+        padding: 5px;
+    }
+
+    .animal-emoji {
+        font-size: 2em;
+        margin-bottom: 2px;
+    }
+
+    .animal-name {
+        font-size: 1em;
+    }
+
+    .animal-sound {
+        font-size: 0.75em;
     }
 
     .start-button {

@@ -1,27 +1,26 @@
 // ゲーム設定
 const GAME_CONFIG = {
     animals: ['🐶', '🐱', '🐰', '🐸', '🐻', '🐼', '🐨', '🦁', '🐯', '🦊', '🐷', '🐮'],
-    gridSize: 9, // デフォルト: 3x3 grid
-    gameDuration: 30, // 秒
-    spawnInterval: 800, // ミリ秒
+    gridSize: 9, // 常に3x3 grid
+    gameDuration: 60, // 秒（長めに設定）
+    spawnInterval: 2500, // ミリ秒（ゆっくり）
     pointsPerClick: 10,
-    mobileBreakpoint: 768 // スマホ判定のブレークポイント（ピクセル）
+    maxActiveAnimals: 3, // 同時に表示する動物の最大数
+    minActiveAnimals: 2  // 同時に表示する動物の最小数
 };
 
-// 画面サイズに応じたグリッドサイズを取得
-function getGridSize() {
-    const isMobile = window.innerWidth <= GAME_CONFIG.mobileBreakpoint;
-    return isMobile ? 4 : 9; // スマホ: 2x2、PC: 3x3
+// グリッド設定を取得（常に3x3）
+function getGridConfig() {
+    return {
+        size: 9,
+        columns: 3,
+        rows: 3
+    };
 }
 
-// 画面サイズに応じたグリッド設定を取得
-function getGridConfig() {
-    const isMobile = window.innerWidth <= GAME_CONFIG.mobileBreakpoint;
-    return {
-        size: isMobile ? 4 : 9,
-        columns: isMobile ? 2 : 3,
-        rows: isMobile ? 2 : 3
-    };
+// 現在のグリッドサイズを取得（常に9）
+function getGridSize() {
+    return 9;
 }
 
 // ゲーム状態
@@ -29,7 +28,7 @@ let gameState = {
     score: 0,
     timeLeft: GAME_CONFIG.gameDuration,
     isPlaying: false,
-    currentAnimal: null,
+    activeAnimals: [], // 現在アクティブな動物の配列 [{index: 0, emoji: '🐶'}, ...]
     spawnTimer: null,
     countdownTimer: null
 };
@@ -96,38 +95,55 @@ function startGame() {
 
 // 動物をスポーン
 function startSpawning() {
-    spawnAnimal();
+    spawnAnimals();
     gameState.spawnTimer = setInterval(() => {
         if (gameState.isPlaying) {
-            spawnAnimal();
+            spawnAnimals();
         }
     }, GAME_CONFIG.spawnInterval);
 }
 
-// ランダムなセルに動物を表示
-function spawnAnimal() {
-    // 前の動物を削除
-    if (gameState.currentAnimal !== null) {
-        const previousCell = document.querySelector(`[data-index="${gameState.currentAnimal}"]`);
-        if (previousCell) {
-            previousCell.textContent = '';
-            previousCell.classList.remove('active');
+// ランダムなセルに動物を表示（複数）
+function spawnAnimals() {
+    // 全ての動物をクリア
+    clearAllAnimals();
+
+    const gridSize = getGridSize();
+    const numAnimals = Math.floor(Math.random() * (GAME_CONFIG.maxActiveAnimals - GAME_CONFIG.minActiveAnimals + 1)) + GAME_CONFIG.minActiveAnimals;
+
+    // 使用可能なセルのインデックス
+    const availableIndexes = Array.from({length: gridSize}, (_, i) => i);
+
+    // ランダムに複数の動物を配置
+    for (let i = 0; i < numAnimals && availableIndexes.length > 0; i++) {
+        // ランダムなセルを選択
+        const randomPos = Math.floor(Math.random() * availableIndexes.length);
+        const cellIndex = availableIndexes[randomPos];
+        availableIndexes.splice(randomPos, 1); // 使用したインデックスを削除
+
+        // ランダムな動物を選択
+        const randomAnimal = GAME_CONFIG.animals[Math.floor(Math.random() * GAME_CONFIG.animals.length)];
+
+        // セルに動物を表示
+        const cell = document.querySelector(`[data-index="${cellIndex}"]`);
+        if (cell) {
+            cell.textContent = randomAnimal;
+            cell.classList.add('active');
+            gameState.activeAnimals.push({index: cellIndex, emoji: randomAnimal});
         }
     }
+}
 
-    // 現在のグリッドサイズを取得
-    const currentGridSize = getGridSize();
-
-    // ランダムなセルを選択
-    const randomIndex = Math.floor(Math.random() * currentGridSize);
-    const randomAnimal = GAME_CONFIG.animals[Math.floor(Math.random() * GAME_CONFIG.animals.length)];
-
-    const cell = document.querySelector(`[data-index="${randomIndex}"]`);
-    if (cell) {
-        cell.textContent = randomAnimal;
-        cell.classList.add('active');
-        gameState.currentAnimal = randomIndex;
-    }
+// 全ての動物をクリア
+function clearAllAnimals() {
+    gameState.activeAnimals.forEach(animal => {
+        const cell = document.querySelector(`[data-index="${animal.index}"]`);
+        if (cell) {
+            cell.textContent = '';
+            cell.classList.remove('active');
+        }
+    });
+    gameState.activeAnimals = [];
 }
 
 // セルクリック処理
@@ -137,8 +153,10 @@ function handleCellClick(event) {
     const clickedIndex = parseInt(event.currentTarget.dataset.index);
     const cell = event.currentTarget;
 
-    // アクティブな動物をクリックした場合
-    if (clickedIndex === gameState.currentAnimal && cell.classList.contains('active')) {
+    // クリックされたセルに動物がいるか確認
+    const animalIndex = gameState.activeAnimals.findIndex(animal => animal.index === clickedIndex);
+
+    if (animalIndex !== -1 && cell.classList.contains('active')) {
         // スコア追加
         gameState.score += GAME_CONFIG.pointsPerClick;
         updateScore();
@@ -154,9 +172,8 @@ function handleCellClick(event) {
         // 効果音
         playSound('click');
 
-        // 新しい動物をすぐにスポーン
-        gameState.currentAnimal = null;
-        setTimeout(spawnAnimal, 300);
+        // 配列から削除
+        gameState.activeAnimals.splice(animalIndex, 1);
     }
 }
 
@@ -179,11 +196,7 @@ function endGame() {
     clearInterval(gameState.countdownTimer);
 
     // 全ての動物を削除
-    const cells = document.querySelectorAll('.game-cell');
-    cells.forEach(cell => {
-        cell.textContent = '';
-        cell.classList.remove('active');
-    });
+    clearAllAnimals();
 
     // 終了画面を表示
     elements.finalScoreDisplay.textContent = gameState.score;

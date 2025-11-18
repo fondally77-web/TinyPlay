@@ -1,0 +1,240 @@
+/* 基本スタイル */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', 'Hiragino Sans', 'Meiryo', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.game-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 30px;
+    padding: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 900px;
+    width: 95%;
+}
+
+/* ヘッダー */
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    color: #ff6b6b;
+    font-size: 2.5em;
+    margin-bottom: 15px;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1);
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.score-board {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 15px;
+}
+
+.score, .timer {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    padding: 15px 30px;
+    border-radius: 20px;
+    color: white;
+    font-size: 1.5em;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.label {
+    margin-right: 10px;
+}
+
+.number {
+    font-size: 1.3em;
+    color: #fff59d;
+}
+
+/* ゲームエリア */
+.game-area {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    border-radius: 20px;
+    padding: 30px;
+    min-height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* スタート画面 */
+.start-screen, .end-screen {
+    text-align: center;
+}
+
+.start-screen h2, .end-screen h2 {
+    font-size: 3em;
+    color: #4ecdc4;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.start-screen p {
+    font-size: 4em;
+    margin: 30px 0;
+    animation: wiggle 1s infinite;
+}
+
+@keyframes wiggle {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+}
+
+.start-button {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border: none;
+    padding: 25px 60px;
+    font-size: 2em;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s;
+    font-weight: bold;
+}
+
+.start-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+.start-button:active {
+    transform: scale(0.95);
+}
+
+/* ゲームグリッド */
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 15px;
+    width: 100%;
+    max-width: 600px;
+    height: 500px;
+}
+
+.game-cell {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    font-size: 5em;
+}
+
+.game-cell:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.game-cell.active {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+    animation: pulse 0.8s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.game-cell.clicked {
+    animation: pop 0.3s;
+}
+
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(0.8); opacity: 0; }
+}
+
+/* エンド画面 */
+.end-screen h2 {
+    font-size: 3em;
+    color: #ff6b6b;
+    margin-bottom: 30px;
+}
+
+.final-score {
+    font-size: 2.5em;
+    color: #4ecdc4;
+    font-weight: bold;
+    margin: 30px 0;
+}
+
+/* フッター */
+footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.instructions {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    padding: 15px;
+    border-radius: 15px;
+    color: #333;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8em;
+    }
+
+    .score-board {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .game-grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        height: 400px;
+    }
+
+    .game-cell {
+        font-size: 3em;
+    }
+
+    .start-button {
+        padding: 20px 40px;
+        font-size: 1.5em;
+    }
+}
+
+/* アニメーションエフェクト */
+.sparkle {
+    animation: sparkle 0.6s;
+}
+
+@keyframes sparkle {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.5) saturate(1.5); }
+}

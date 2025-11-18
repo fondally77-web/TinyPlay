@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎈 楽しい動物ゲーム！ 🎈</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>🎮 動物をクリックしよう！ 🎮</h1>
+            <div class="score-board">
+                <div class="score">
+                    <span class="label">スコア:</span>
+                    <span id="score" class="number">0</span>
+                </div>
+                <div class="timer">
+                    <span class="label">じかん:</span>
+                    <span id="timer" class="number">30</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="game-area" id="gameArea">
+            <div class="start-screen" id="startScreen">
+                <h2>ようこそ！</h2>
+                <p>🐶 🐱 🐰 🐸 🐻</p>
+                <button class="start-button" id="startButton">スタート！</button>
+            </div>
+            <div class="game-grid" id="gameGrid" style="display: none;">
+                <!-- Game cells will be generated here -->
+            </div>
+            <div class="end-screen" id="endScreen" style="display: none;">
+                <h2>よくできました！ 🎉</h2>
+                <p class="final-score">スコア: <span id="finalScore">0</span></p>
+                <button class="start-button" id="restartButton">もういちど！</button>
+            </div>
+        </div>
+
+        <footer>
+            <div class="instructions">
+                <p>⭐ 動物をクリックしてポイントをゲット！ ⭐</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="js/game.js"></script>
+</body>
+</html>
